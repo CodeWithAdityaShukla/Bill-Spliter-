@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bill Splitter - Fair & Exact Expense Sharing</title>
+    <meta name="description" content="A sleek, glassmorphic dark-slate bill splitter web app with 3D interactions, option boxes, particle effects, and exact cent calculations." />
+    <meta property="og:title" content="Bill Splitter - Fair & Exact Expense Sharing" />
+    <meta property="og:description" content="A sleek, glassmorphic dark-slate bill splitter web app with 3D interactions, option boxes, particle effects, and exact cent calculations." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <!-- Interactive Background Particle Canvas -->
+    <canvas id="particle-canvas" class="particle-canvas" aria-hidden="true"></canvas>
+
+    <!-- Interactive Mouse-Tracking Glow Follower -->
+    <div id="mouse-glow" class="mouse-glow-follower" aria-hidden="true"></div>
+
+    <div class="app-container">
+      
+      <!-- Floating 3D Emojis in Open Spaces (Completely Outside Boxes) -->
+      <div class="floating-emojis-stage" aria-hidden="true">
+        <div class="emoji-3d-node emoji-top-left" style="--delay: 0s; --rot: -12deg;" title="Celebrate!">🥂</div>
+        <div class="emoji-3d-node emoji-top-right" style="--delay: 1.2s; --rot: 14deg;" title="Flying cash">💸</div>
+        <div class="emoji-3d-node emoji-flank-left-1" style="--delay: 0.6s; --rot: -9deg;" title="Pizza dinner">🍕</div>
+        <div class="emoji-3d-node emoji-flank-left-2" style="--delay: 2.1s; --rot: 10deg;" title="Burger treat">🍔</div>
+        <div class="emoji-3d-node emoji-flank-right-1" style="--delay: 1.8s; --rot: 12deg;" title="Golden coin">🪙</div>
+        <div class="emoji-3d-node emoji-flank-right-2" style="--delay: 0.9s; --rot: -11deg;" title="Split receipt">🧾</div>
+        <div class="emoji-3d-node emoji-bottom-accent-1" style="--delay: 2.5s; --rot: 15deg;" title="Pure fair share">✨</div>
+        <div class="emoji-3d-node emoji-bottom-accent-2" style="--delay: 1.6s; --rot: -14deg;" title="Quick payment">💳</div>
+      </div>
+
+      <!-- Top Control Bar with Digital Corner Clock & Sun/Moon Theme Toggle -->
+      <div class="top-nav-bar">
+        <!-- Digital Corner Clock -->
+        <div id="digital-clock" class="digital-clock" aria-label="Digital Clock">
+          <div class="digital-clock-time tabular-nums">
+            <span id="clock-hours">00</span><span class="clock-colon">:</span><span id="clock-minutes">00</span><span class="clock-colon">:</span><span id="clock-seconds">00</span>
+            <span id="clock-ampm" class="clock-ampm">AM</span>
+          </div>
+          <div id="clock-date" class="clock-date">Sun, Oct 4</div>
+        </div>
+
+        <div class="brand-kicker">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+          Fair &amp; Exact Expense Sharing
+        </div>
+        
+        <!-- Dark / Light Button (Sun & Moon 3D Toggle with Golden Glow) -->
+        <button id="theme-toggle-btn" class="theme-toggle-btn btn-3d" title="Toggle Light / Dark Mode" aria-label="Toggle Sun and Moon mode">
+          <span class="theme-icon-wrap sun-icon-wrap">
+            <svg class="theme-svg sun-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </span>
+          <span class="theme-icon-wrap moon-icon-wrap active">
+            <svg class="theme-svg moon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </span>
+          <span id="theme-label" class="theme-label">Dark</span>
+        </button>
+      </div>
+
+      <!-- Top Header & Search Bar -->
+      <header class="top-header">
+        <!-- Ambient Golden Light Aura -->
+        <div class="golden-light-aura" aria-hidden="true"></div>
+
+        <div class="header-content-wrapper">
+          <div class="header-text-col">
+            <h1 class="main-headline">Bill Splitter</h1>
+            <p class="headline-subtitle">Split any group dinner, trip, or shared bill down to the exact cent with zero leftovers.</p>
+            
+            <!-- Light-Tone Search Bar - Just down to the headline -->
+            <div class="search-bar-wrapper">
+              <div class="search-bar-container">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input 
+                  type="text" 
+                  id="search-input" 
+                  class="search-input" 
+                  placeholder="Search saved occasions or previous bills..." 
+                  autocomplete="off"
+                />
+                <button id="search-clear-btn" class="search-clear-btn" title="Clear search">✕</button>
+              </div>
+              <!-- Live Search Dropdown -->
+              <div id="search-results-dropdown" class="search-results-dropdown"></div>
+            </div>
+          </div>
+
+          <!-- 3D Papercraft Bill in Open Space (Floating freely outside any box/card) -->
+          <div class="open-space-papercraft" title="3D Papercraft Origami Bill">
+            <div class="papercraft-floating-art">
+              <img 
+                src="/src/assets/images/papercraft_bill_photo_1791126429836.jpg" 
+                alt="3D Papercraft Origami Bill" 
+                class="papercraft-canvas-img"
+                referrerPolicy="no-referrer"
+              />
+              <div class="papercraft-glow-disc" aria-hidden="true"></div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Alert / Validation Message Banner (Hidden by default; triggers on empty, zero, or negative inputs) -->
+      <div id="alert-banner" class="alert-banner hidden" role="alert">
+        <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span id="alert-message">Please enter a valid bill amount and at least 1 person.</span>
+      </div>
+
+      <!-- Main 3D Grid -->
+      <main class="main-grid">
+        
+        <!-- Left Column: Input Form 3D Glass Card -->
+        <section class="glass-card-3d" aria-labelledby="form-card-heading">
+          <div class="card-header">
+            <h2 id="form-card-heading" class="card-title">
+              <svg class="card-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                <line x1="2" y1="10" x2="22" y2="10"></line>
+              </svg>
+              Bill Details
+            </h2>
+          </div>
+
+          <!-- Occasion Name -->
+          <div class="form-group">
+            <label for="occasion-input" class="field-label">Occasion / Event Name</label>
+            <div class="input-container">
+              <input 
+                type="text" 
+                id="occasion-input" 
+                class="text-input" 
+                placeholder="e.g. Italian Bistro Dinner, Cabin Weekend, Office Lunch" 
+              />
+            </div>
+          </div>
+
+          <!-- Currency Option Boxes -->
+          <div class="form-group">
+            <div class="field-label">
+              <span>Select Currency</span>
+              <span class="field-sublabel">Tap box to choose</span>
+            </div>
+            <div class="currency-boxes-row" aria-label="Currency Selector">
+              <div class="currency-box active" data-curr="$">$ USD</div>
+              <div class="currency-box" data-curr="€">€ EUR</div>
+              <div class="currency-box" data-curr="£">£ GBP</div>
+              <div class="currency-box" data-curr="₹">₹ INR</div>
+              <div class="currency-box" data-curr="¥">¥ JPY</div>
+              <div class="currency-box" data-curr="A$">A$ AUD</div>
+            </div>
+            <input type="hidden" id="currency-select" value="$" />
+          </div>
+
+          <!-- Total Bill Amount -->
+          <div class="form-group">
+            <label for="bill-input" class="field-label">
+              <span>Total Bill Amount <span class="required">*</span></span>
+              <span id="active-currency-badge" class="field-sublabel tabular-nums" style="color: var(--accent-cyan-light); font-weight: 700;">USD ($)</span>
+            </label>
+            <div class="input-container">
+              <span id="bill-curr-symbol" class="tabular-nums" style="color: var(--accent-cyan-light); font-weight: 700; margin-right: 0.5rem; font-size: 1.1rem;">$</span>
+              <input 
+                type="number" 
+                id="bill-input" 
+                class="text-input tabular-nums" 
+                placeholder="0.00" 
+                step="0.01" 
+                min="0.01" 
+                required 
+              />
+            </div>
+          </div>
+
+          <!-- Party Size with Separated Hierarchical Option Boxes -->
+          <div class="form-group">
+            <label for="people-input" class="field-label">
+              <span>Number of People <span class="required">*</span></span>
+              <span class="field-sublabel">Direct input or tap box</span>
+            </label>
+            <div class="input-container">
+              <input 
+                type="number" 
+                id="people-input" 
+                class="text-input tabular-nums" 
+                placeholder="e.g. 4" 
+                min="1" 
+                step="1" 
+                required 
+              />
+            </div>
+
+            <!-- Tier 1: Primary Common Sizes (Large Boxes) -->
+            <div class="option-boxes-primary" aria-label="Common Party Sizes">
+              <div class="box-primary active" data-people="2">
+                <span class="box-number">2</span>
+                <span class="box-label">Duo</span>
+              </div>
+              <div class="box-primary" data-people="3">
+                <span class="box-number">3</span>
+                <span class="box-label">Trio</span>
+              </div>
+              <div class="box-primary" data-people="4">
+                <span class="box-number">4</span>
+                <span class="box-label">Quad</span>
+              </div>
+              <div class="box-primary" data-people="5">
+                <span class="box-number">5</span>
+                <span class="box-label">Squad</span>
+              </div>
+            </div>
+
+            <!-- Tier 2: Secondary / Larger Sizes (Compact Boxes) -->
+            <div class="option-boxes-secondary" aria-label="Extended Party Sizes">
+              <div class="box-secondary" data-people="6">
+                <span class="box-number">6</span>
+                <span class="box-label">Crew</span>
+              </div>
+              <div class="box-secondary" data-people="8">
+                <span class="box-number">8</span>
+                <span class="box-label">Group</span>
+              </div>
+              <div class="box-secondary" data-people="10">
+                <span class="box-number">10</span>
+                <span class="box-label">Party</span>
+              </div>
+              <div class="box-secondary" data-people="12">
+                <span class="box-number">12</span>
+                <span class="box-label">Event</span>
+              </div>
+              <div class="box-secondary" data-people="15">
+                <span class="box-number">15</span>
+                <span class="box-label">Large</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Optional Tip with Tiered Option Boxes -->
+          <div class="form-group">
+            <div class="field-label">
+              <span>Optional Tip / Gratuity</span>
+              <span class="field-sublabel">Added before exact split</span>
+            </div>
+            <div class="tip-boxes-tier" aria-label="Tip Options">
+              <div class="tip-box active" data-tip="0">
+                <span class="tip-percent">0%</span>
+                <span class="tip-tag">None</span>
+              </div>
+              <div class="tip-box" data-tip="10">
+                <span class="tip-percent">10%</span>
+                <span class="tip-tag">Fair</span>
+              </div>
+              <div class="tip-box" data-tip="15">
+                <span class="tip-percent">15%</span>
+                <span class="tip-tag">Standard</span>
+              </div>
+              <div class="tip-box" data-tip="18">
+                <span class="tip-percent">18%</span>
+                <span class="tip-tag">Great</span>
+              </div>
+              <div class="tip-box" data-tip="20">
+                <span class="tip-percent">20%</span>
+                <span class="tip-tag">Generous</span>
+              </div>
+              <div class="tip-box" data-tip="custom">
+                <span class="tip-percent">Custom</span>
+                <span class="tip-tag">Input %</span>
+              </div>
+            </div>
+            <div id="custom-tip-container" class="input-container" style="display: none; margin-top: 0.65rem;">
+              <input 
+                type="number" 
+                id="custom-tip-input" 
+                class="text-input tabular-nums" 
+                placeholder="Enter custom tip % (e.g. 22)" 
+                min="0" 
+                step="0.5" 
+              />
+            </div>
+          </div>
+
+          <!-- 3D Light-Tone Action Buttons -->
+          <div class="btn-row">
+            <button type="button" id="btn-calculate" class="btn-3d btn-3d-primary btn-block">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+                <line x1="8" y1="6" x2="16" y2="6"></line>
+                <line x1="16" y1="14" x2="16" y2="18"></line>
+                <path d="M16 10h.01"></path>
+                <path d="M12 10h.01"></path>
+                <path d="M8 10h.01"></path>
+                <path d="M12 14h.01"></path>
+                <path d="M8 14h.01"></path>
+                <path d="M12 18h.01"></path>
+                <path d="M8 18h.01"></path>
+              </svg>
+              Show What Each Person Pays
+            </button>
+            
+            <button type="button" id="btn-reset" class="btn-3d btn-3d-secondary">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                <path d="M3 3v5h5"></path>
+              </svg>
+              Reset
+            </button>
+          </div>
+        </section>
+
+        <!-- Right Column: Results 3D Glass Card -->
+        <section class="glass-card-3d" aria-labelledby="results-card-heading">
+          <div class="card-header">
+            <h2 id="results-card-heading" class="card-title">
+              <svg class="card-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+              Individual Shares
+            </h2>
+          </div>
+
+          <!-- Empty State (Shown before calculation) -->
+          <div id="empty-state-card" class="empty-state-card">
+            <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            <h3 class="empty-state-title">No Calculation Yet</h3>
+            <p class="empty-state-desc">Enter your bill details and party size, then click "Show What Each Person Pays" for an exact-cent split.</p>
+          </div>
+
+          <!-- Results Content (Hidden until valid calculation) -->
+          <div id="results-card" class="results-card hidden">
+            
+            <!-- Summary Overview Banner -->
+            <div class="split-summary-panel">
+              <div class="summary-occasion-tag">Occasion Breakdown</div>
+              <h3 id="summary-occasion-name" class="summary-occasion-name">Dinner</h3>
+              
+              <div class="summary-metrics">
+                <div class="metric-box">
+                  <span class="metric-label">Total Bill</span>
+                  <span id="summary-total-bill" class="metric-val highlight tabular-nums">$0.00</span>
+                </div>
+                <div class="metric-box">
+                  <span class="metric-label">Party Size</span>
+                  <span id="summary-people-count" class="metric-val tabular-nums">0 people</span>
+                </div>
+                <div class="metric-box">
+                  <span class="metric-label">Base Share</span>
+                  <span id="summary-base-share" class="metric-val tabular-nums">$0.00</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Exact Cent Mathematical Guarantee -->
+            <div id="cent-verification-badge" class="cent-verification-badge">
+              <div class="cent-badge-text">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span id="cent-verification-text">Exact cent distribution: sum equals bill 100.00%</span>
+              </div>
+            </div>
+
+            <!-- Shares List -->
+            <div id="shares-list" class="shares-list" role="list"></div>
+
+            <!-- Action Bar -->
+            <div class="results-action-bar">
+              <button type="button" id="btn-copy" class="btn-3d btn-3d-secondary btn-3d-sm">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                Copy Summary
+              </button>
+              <button type="button" id="btn-save-history" class="btn-3d btn-3d-secondary btn-3d-sm">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                  <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                  <polyline points="7 3 7 8 15 8"></polyline>
+                </svg>
+                Save Split
+              </button>
+            </div>
+
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Occasion History Section -->
+      <section id="history-section" class="history-section" style="display: none;">
+        <div class="card-header" style="margin-bottom: 0.5rem;">
+          <h2 class="card-title">
+            <svg class="card-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            Saved Splits &amp; Occasions
+          </h2>
+          <button type="button" id="btn-clear-history" class="btn-3d btn-3d-secondary btn-3d-sm" style="font-size: 0.785rem; padding: 0.4rem 0.75rem;">
+            Clear History
+          </button>
+        </div>
+        <div id="history-grid" class="history-grid"></div>
+      </section>
+
+    </div>
+
+    <!-- Vanilla Script -->
+    <script src="./script.js"></script>
+  </body>
+</html>

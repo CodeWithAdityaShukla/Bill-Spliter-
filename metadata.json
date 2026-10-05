@@ -1,0 +1,6 @@
+{
+  "name": "Bill Splitter",
+  "description": "A sleek, glassmorphic dark-slate bill splitter app that accurately calculates and distributes shares down to the exact cent with history search and local persistence.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
