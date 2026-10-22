@@ -50,7 +50,7 @@ To run this project locally on your machine:
 
 Clone the repository:
 
-git clone (https://github.com/CodeWithAdityaShukla/bill-spliter.git)
+git clone (https://github.com/CodeWithAdityaShukla/Bill-Spliter.git)
 
 
 Navigate into the directory:
