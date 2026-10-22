@@ -6,7 +6,7 @@ An interactive, responsive 3D web application designed to simplify group expense
 
 Check out the live web application here:
 
-[🚀 View Live Demo]https://adityashukla.github.io/Bill-Splitter-/
+[🚀 View Live Demo]https://adityashukla.github.io/Bill-Spliter-/
 
 ✨ Key Features
 
